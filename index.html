@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Seller BI</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Google Fonts: Roboto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        kaspi: { text: '#2B2F33', red: '#F14635', bg: '#F5F5F8' }
+                    },
+                    fontFamily: { sans: ['Roboto', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Скрытие скроллбара для красоты */
+        ::-webkit-scrollbar { display: none; }
+        body { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-kaspi-bg text-kaspi-text font-sans antialiased selection:bg-kaspi-red selection:text-white">
+
+    <!-- Экран блокировки (Триал окончен) -->
+    <div id="lock-screen" class="hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6">
+        <div class="text-center max-w-xs">
+            <h1 class="text-2xl font-bold mb-2">Время вышло</h1>
+            <p class="text-gray-500 mb-8">Ваш 3-дневный пробный период завершен. Для продолжения работы оплатите подписку.</p>
+            <p class="text-sm text-gray-400 mb-4">Ваш ID: <span id="lock-client-id" class="font-bold text-kaspi-text"></span></p>
+            <button class="w-full bg-kaspi-red text-white py-3 rounded-xl font-medium shadow-lg active:scale-95 transition">Оплатить 3 200 ₸</button>
+        </div>
+    </div>
+
+    <!-- Основной контейнер -->
+    <div id="app" class="max-w-md mx-auto bg-white min-h-screen shadow-sm relative pb-20 overflow-hidden">
+        
+        <!-- Верхняя панель -->
+        <header class="pt-6 pb-4 px-5 sticky top-0 bg-white/90 backdrop-blur-md z-40">
+            <h1 id="header-title" class="text-2xl font-bold">Главная</h1>
+        </header>
+
+        <!-- ВЬЮХИ -->
+
+        <!-- 1. Дашборд -->
+        <main id="view-dashboard" class="px-5 space-y-6 view-section">
+            <!-- Виджеты -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-kaspi-bg p-4 rounded-2xl">
+                    <p class="text-xs text-gray-500">Чистая прибыль</p>
+                    <p class="text-lg font-bold text-kaspi-text" id="w-profit">0 ₸</p>
+                </div>
+                <div class="bg-kaspi-bg p-4 rounded-2xl">
+                    <p class="text-xs text-gray-500">Оборот</p>
+                    <p class="text-lg font-bold text-kaspi-text" id="w-turnover">0 ₸</p>
+                </div>
+                <div class="bg-kaspi-bg p-4 rounded-2xl col-span-2">
+                    <p class="text-xs text-gray-500">Расходы (Закуп)</p>
+                    <p class="text-lg font-bold text-kaspi-text" id="w-expenses">0 ₸</p>
+                </div>
+            </div>
+
+            <!-- Калькулятор на месте -->
+            <div class="border border-gray-100 p-4 rounded-2xl shadow-sm">
+                <h3 class="font-bold mb-3">Калькулятор на месте</h3>
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                    <input type="number" id="calc-buy" placeholder="Закуп (₸)" class="bg-kaspi-bg p-2 rounded-xl text-sm outline-none focus:ring-1 focus:ring-kaspi-red">
+                    <input type="number" id="calc-sell" placeholder="Продажа (₸)" class="bg-kaspi-bg p-2 rounded-xl text-sm outline-none focus:ring-1 focus:ring-kaspi-red">
+                </div>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-sm text-gray-500">Налог:</span>
+                    <select id="calc-tax" class="bg-kaspi-bg p-2 rounded-xl text-sm outline-none">
+                        <option value="3">3%</option>
+                        <option value="5">5%</option>
+                        <option value="10">10%</option>
+                        <option value="15">15%</option>
+                        <option value="20">20%</option>
+                    </select>
+                </div>
+                <div class="flex justify-between items-center border-t pt-3">
+                    <span class="font-medium text-sm">Маржа:</span>
+                    <span id="calc-result" class="font-bold text-kaspi-red">0 ₸</span>
+                </div>
+            </div>
+
+            <!-- Аналитика -->
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold">Аналитика</h3>
+                    <select id="chart-period" class="bg-kaspi-bg text-xs px-2 py-1 rounded-lg outline-none">
+                        <option value="7">Неделя</option>
+                        <option value="30">Месяц</option>
+                        <option value="180">6 месяцев</option>
+                        <option value="365">Год</option>
+                    </select>
+                </div>
+                <div class="mb-6"><canvas id="lineChart" height="200"></canvas></div>
+                <div><canvas id="pieChart" height="200"></canvas></div>
+            </div>
+        </main>
+
+        <!-- 2. Склад -->
+        <main id="view-inventory" class="px-5 space-y-6 hidden view-section">
+            <div class="bg-kaspi-bg p-4 rounded-2xl">
+                <h3 class="font-bold mb-3">Добавить товар</h3>
+                <div class="space-y-2 mb-3">
+                    <input type="text" id="inv-name" placeholder="Название" class="w-full bg-white p-3 rounded-xl text-sm outline-none">
+                    <input type="text" id="inv-cat" placeholder="Категория" class="w-full bg-white p-3 rounded-xl text-sm outline-none">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" id="inv-buy" placeholder="Закуп (₸)" class="bg-white p-3 rounded-xl text-sm outline-none">
+                        <input type="number" id="inv-qty" placeholder="Количество" class="bg-white p-3 rounded-xl text-sm outline-none">
+                    </div>
+                </div>
+                <button onclick="addInventory()" class="w-full bg-kaspi-red text-white py-3 rounded-xl font-medium shadow-sm">Добавить на склад</button>
+            </div>
+
+            <div id="inventory-list" class="space-y-3">
+                <!-- Рендер товаров -->
+            </div>
+        </main>
+
+        <!-- 3. История -->
+        <main id="view-history" class="px-5 hidden view-section">
+            <div id="history-list" class="space-y-3">
+                <!-- Рендер истории -->
+            </div>
+        </main>
+
+        <!-- 4. Профиль -->
+        <main id="view-profile" class="px-5 space-y-6 hidden view-section">
+            <div class="bg-kaspi-bg p-5 rounded-2xl flex items-center space-x-4">
+                <div class="w-12 h-12 bg-kaspi-red text-white rounded-full flex items-center justify-center font-bold text-xl">S</div>
+                <div>
+                    <h2 class="font-bold">Мой профиль</h2>
+                    <p class="text-xs text-gray-500">ID: <span id="prof-client-id" class="font-mono"></span></p>
+                </div>
+            </div>
+
+            <!-- Вход в скрытую админку -->
+            <div class="mt-8 border-t border-gray-100 pt-6">
+                <p class="text-xs text-gray-400 mb-2">Для администраторов</p>
+                <div class="flex space-x-2">
+                    <input type="password" id="admin-password" placeholder="Пароль" class="flex-1 bg-kaspi-bg p-3 rounded-xl text-sm outline-none">
+                    <button onclick="loginAdmin()" class="bg-gray-200 text-kaspi-text px-4 rounded-xl font-medium text-sm">Вход</button>
+                </div>
+            </div>
+
+            <!-- Скрытая панель (показывается после ввода пароля) -->
+            <div id="admin-panel" class="hidden bg-gray-900 p-5 rounded-2xl text-white mt-4 shadow-lg">
+                <h3 class="font-bold text-kaspi-red mb-4">Admin Panel</h3>
+                <div class="mb-4">
+                    <input type="text" id="admin-activate-id" placeholder="ID клиента" class="w-full bg-gray-800 p-3 rounded-xl text-sm outline-none mb-2 text-white">
+                    <button onclick="activateSubscription()" class="w-full bg-kaspi-red py-2 rounded-xl font-medium text-sm">Активировать подписку</button>
+                </div>
+                <button onclick="resetAllData()" class="w-full border border-red-500 text-red-500 py-2 rounded-xl font-medium text-sm mt-4">Сбросить ВСЕ данные</button>
+            </div>
+        </main>
+
+        <!-- Нижнее меню навигации -->
+        <nav class="fixed bottom-0 max-w-md w-full bg-white border-t border-gray-100 pb-safe pt-2 px-6 flex justify-between z-40 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+            <button onclick="switchTab('dashboard')" class="nav-btn text-kaspi-red flex flex-col items-center p-2" data-target="dashboard">
+                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M13 3v11h9V3h-9zm-2 0H2v18h9V3zm11 13h-9v5h9v-5z"/></svg>
+                <span class="text-[10px] font-medium">Главная</span>
+            </button>
+            <button onclick="switchTab('inventory')" class="nav-btn text-gray-400 flex flex-col items-center p-2" data-target="inventory">
+                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zM3 18.5V7c1.1-.35 2.3-.5 3.5-.5 1.34 0 3.13.41 4.5.99v11.5C9.63 18.41 7.84 18 6.5 18c-1.2 0-2.4.15-3.5.5zm18 0c-1.1-.35-2.3-.5-3.5-.5-1.34 0-3.13.41-4.5.99V7.49c1.37-.59 3.16-.99 4.5-.99 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+                <span class="text-[10px] font-medium">Склад</span>
+            </button>
+            <button onclick="switchTab('history')" class="nav-btn text-gray-400 flex flex-col items-center p-2" data-target="history">
+                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                <span class="text-[10px] font-medium">История</span>
+            </button>
+            <button onclick="switchTab('profile')" class="nav-btn text-gray-400 flex flex-col items-center p-2" data-target="profile">
+                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span class="text-[10px] font-medium">Профиль</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

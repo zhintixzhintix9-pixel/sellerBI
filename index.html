@@ -2,196 +2,451 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seller BI</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ffffff">
-    
-    <!-- Google Fonts: Roboto -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        kaspi: { text: '#2B2F33', red: '#F14635', bg: '#F5F5F8' }
-                    },
-                    fontFamily: { sans: ['Roboto', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Chart.js -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller BI Cloud | Kaspi Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Скрытие скроллбара для красоты */
-        ::-webkit-scrollbar { display: none; }
-        body { -ms-overflow-style: none; scrollbar-width: none; }
+        :root {
+            --kaspi-red: #F14635;
+            --kaspi-blue: #0089D0;
+            --bg-gray: #F2F2F2;
+            --text-main: #333;
+            --border-color: #EAEAEA;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+        body { background-color: var(--bg-gray); color: var(--text-main); line-height: 1.5; }
+
+        /* Header */
+        header { background: #fff; padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { color: var(--kaspi-red); font-weight: 700; font-size: 20px; text-decoration: none; }
+        .client-id { font-size: 14px; color: #777; background: #f9f9f9; padding: 4px 10px; border-radius: 5px; }
+
+        /* Layout */
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        h2 { font-size: 18px; margin-bottom: 15px; font-weight: 500; }
+
+        /* Forms */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; outline: none; }
+        input:focus { border-color: var(--kaspi-red); }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: var(--kaspi-red); color: #fff; }
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* Dashboard Widgets */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .widget { background: #fff; padding: 15px; border-radius: 12px; text-align: center; }
+        .widget-val { font-size: 22px; font-weight: 700; color: var(--text-main); margin-top: 5px; }
+        .widget-label { font-size: 12px; color: #888; text-transform: uppercase; }
+
+        /* Paywall */
+        #paywall { display: none; position: fixed; inset: 0; background: #fff; z-index: 1000; padding: 40px 20px; text-align: center; overflow-y: auto; }
+        .price-card { border: 2px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 10px; cursor: pointer; }
+        .price-card.best { border-color: var(--kaspi-red); position: relative; }
+        .price-card.best::after { content: 'ВЫГОДНО'; position: absolute; top: -10px; right: 10px; background: var(--kaspi-red); color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; font-size: 12px; color: #999; padding: 10px; border-bottom: 1px solid var(--border-color); }
+        td { padding: 12px 10px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+
+        /* Admin */
+        #admin-panel { display: none; }
+        .admin-item { border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
+        .admin-btns { display: flex; gap: 5px; }
+        .btn-sm { padding: 5px 8px; font-size: 11px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; }
+        .tab { padding: 8px 16px; background: #fff; border-radius: 20px; font-size: 14px; white-space: nowrap; cursor: pointer; }
+        .tab.active { background: var(--kaspi-red); color: #fff; }
+
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="bg-kaspi-bg text-kaspi-text font-sans antialiased selection:bg-kaspi-red selection:text-white">
+<body>
 
-    <!-- Экран блокировки (Триал окончен) -->
-    <div id="lock-screen" class="hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6">
-        <div class="text-center max-w-xs">
-            <h1 class="text-2xl font-bold mb-2">Время вышло</h1>
-            <p class="text-gray-500 mb-8">Ваш 3-дневный пробный период завершен. Для продолжения работы оплатите подписку.</p>
-            <p class="text-sm text-gray-400 mb-4">Ваш ID: <span id="lock-client-id" class="font-bold text-kaspi-text"></span></p>
-            <button class="w-full bg-kaspi-red text-white py-3 rounded-xl font-medium shadow-lg active:scale-95 transition">Оплатить 3 200 ₸</button>
+<header>
+    <a href="#" class="logo">Seller BI</a>
+    <div id="display-id" class="client-id">Загрузка...</div>
+</header>
+
+<!-- Paywall Screen -->
+<div id="paywall">
+    <h2 style="font-size: 24px;">Срок действия истек</h2>
+    <p style="color: #666; margin-bottom: 30px;">Для продолжения работы выберите тариф и оплатите по номеру:</p>
+    <div style="background: #fdf2f2; padding: 15px; border-radius: 10px; margin-bottom: 30px;">
+        <div style="font-weight: 700; font-size: 18px;">+7 747 421 4264</div>
+        <div style="font-size: 14px;">Анеля Ж. (Kaspi)</div>
+    </div>
+    <div class="price-card" onclick="alert('Отправьте скриншот оплаты менеджеру')">
+        <div style="font-weight: 700;">1 месяц</div>
+        <div style="color: var(--kaspi-red);">3 200 ₸</div>
+    </div>
+    <div class="price-card best" onclick="alert('Отправьте скриншот оплаты менеджеру')">
+        <div style="font-weight: 700;">6 месяцев</div>
+        <div style="color: var(--kaspi-red);">16 000 ₸</div>
+    </div>
+    <div class="price-card" onclick="alert('Отправьте скриншот оплаты менеджеру')">
+        <div style="font-weight: 700;">1 год</div>
+        <div style="color: var(--kaspi-red);">28 000 ₸</div>
+    </div>
+    <p style="margin-top: 20px; font-size: 12px; color: #999;">После оплаты ваш доступ будет активирован администратором.</p>
+    <button class="btn btn-primary" style="margin-top: 20px;" onclick="location.reload()">Я оплатил(а)</button>
+</div>
+
+<div class="container" id="main-content">
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('dashboard')">Дашборд</div>
+        <div class="tab" onclick="switchTab('inventory')">Склад</div>
+        <div class="tab" onclick="switchTab('sales')">Продажи</div>
+        <div class="tab" onclick="openAdmin()">Админ</div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="tab-dashboard">
+        <div class="grid">
+            <div class="widget">
+                <div class="widget-label">Прибыль</div>
+                <div id="stat-profit" class="widget-val">0 ₸</div>
+            </div>
+            <div class="widget">
+                <div class="widget-label">Оборот</div>
+                <div id="stat-revenue" class="widget-val">0 ₸</div>
+            </div>
+            <div class="widget">
+                <div class="widget-label">Расходы</div>
+                <div id="stat-expenses" class="widget-val">0 ₸</div>
+            </div>
+        </div>
+        <div class="card">
+            <h2>График прибыли</h2>
+            <canvas id="profitChart"></canvas>
         </div>
     </div>
 
-    <!-- Основной контейнер -->
-    <div id="app" class="max-w-md mx-auto bg-white min-h-screen shadow-sm relative pb-20 overflow-hidden">
-        
-        <!-- Верхняя панель -->
-        <header class="pt-6 pb-4 px-5 sticky top-0 bg-white/90 backdrop-blur-md z-40">
-            <h1 id="header-title" class="text-2xl font-bold">Главная</h1>
-        </header>
-
-        <!-- ВЬЮХИ -->
-
-        <!-- 1. Дашборд -->
-        <main id="view-dashboard" class="px-5 space-y-6 view-section">
-            <!-- Виджеты -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-kaspi-bg p-4 rounded-2xl">
-                    <p class="text-xs text-gray-500">Чистая прибыль</p>
-                    <p class="text-lg font-bold text-kaspi-text" id="w-profit">0 ₸</p>
-                </div>
-                <div class="bg-kaspi-bg p-4 rounded-2xl">
-                    <p class="text-xs text-gray-500">Оборот</p>
-                    <p class="text-lg font-bold text-kaspi-text" id="w-turnover">0 ₸</p>
-                </div>
-                <div class="bg-kaspi-bg p-4 rounded-2xl col-span-2">
-                    <p class="text-xs text-gray-500">Расходы (Закуп)</p>
-                    <p class="text-lg font-bold text-kaspi-text" id="w-expenses">0 ₸</p>
-                </div>
+    <!-- Inventory -->
+    <div id="tab-inventory" class="hidden">
+        <div class="card">
+            <h2>Добавить товар</h2>
+            <div class="form-group">
+                <label>Название товара</label>
+                <input type="text" id="inv-name" placeholder="Напр: iPhone 15">
             </div>
-
-            <!-- Калькулятор на месте -->
-            <div class="border border-gray-100 p-4 rounded-2xl shadow-sm">
-                <h3 class="font-bold mb-3">Калькулятор на месте</h3>
-                <div class="grid grid-cols-2 gap-2 mb-3">
-                    <input type="number" id="calc-buy" placeholder="Закуп (₸)" class="bg-kaspi-bg p-2 rounded-xl text-sm outline-none focus:ring-1 focus:ring-kaspi-red">
-                    <input type="number" id="calc-sell" placeholder="Продажа (₸)" class="bg-kaspi-bg p-2 rounded-xl text-sm outline-none focus:ring-1 focus:ring-kaspi-red">
-                </div>
-                <div class="flex items-center justify-between mb-3">
-                    <span class="text-sm text-gray-500">Налог:</span>
-                    <select id="calc-tax" class="bg-kaspi-bg p-2 rounded-xl text-sm outline-none">
-                        <option value="3">3%</option>
-                        <option value="5">5%</option>
-                        <option value="10">10%</option>
-                        <option value="15">15%</option>
-                        <option value="20">20%</option>
-                    </select>
-                </div>
-                <div class="flex justify-between items-center border-t pt-3">
-                    <span class="font-medium text-sm">Маржа:</span>
-                    <span id="calc-result" class="font-bold text-kaspi-red">0 ₸</span>
-                </div>
+            <div class="form-group">
+                <label>Цена закупа (₸)</label>
+                <input type="number" id="inv-cost">
             </div>
-
-            <!-- Аналитика -->
-            <div>
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold">Аналитика</h3>
-                    <select id="chart-period" class="bg-kaspi-bg text-xs px-2 py-1 rounded-lg outline-none">
-                        <option value="7">Неделя</option>
-                        <option value="30">Месяц</option>
-                        <option value="180">6 месяцев</option>
-                        <option value="365">Год</option>
-                    </select>
-                </div>
-                <div class="mb-6"><canvas id="lineChart" height="200"></canvas></div>
-                <div><canvas id="pieChart" height="200"></canvas></div>
+            <div class="form-group">
+                <label>Количество</label>
+                <input type="number" id="inv-qty">
             </div>
-        </main>
-
-        <!-- 2. Склад -->
-        <main id="view-inventory" class="px-5 space-y-6 hidden view-section">
-            <div class="bg-kaspi-bg p-4 rounded-2xl">
-                <h3 class="font-bold mb-3">Добавить товар</h3>
-                <div class="space-y-2 mb-3">
-                    <input type="text" id="inv-name" placeholder="Название" class="w-full bg-white p-3 rounded-xl text-sm outline-none">
-                    <input type="text" id="inv-cat" placeholder="Категория" class="w-full bg-white p-3 rounded-xl text-sm outline-none">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="number" id="inv-buy" placeholder="Закуп (₸)" class="bg-white p-3 rounded-xl text-sm outline-none">
-                        <input type="number" id="inv-qty" placeholder="Количество" class="bg-white p-3 rounded-xl text-sm outline-none">
-                    </div>
-                </div>
-                <button onclick="addInventory()" class="w-full bg-kaspi-red text-white py-3 rounded-xl font-medium shadow-sm">Добавить на склад</button>
-            </div>
-
-            <div id="inventory-list" class="space-y-3">
-                <!-- Рендер товаров -->
-            </div>
-        </main>
-
-        <!-- 3. История -->
-        <main id="view-history" class="px-5 hidden view-section">
-            <div id="history-list" class="space-y-3">
-                <!-- Рендер истории -->
-            </div>
-        </main>
-
-        <!-- 4. Профиль -->
-        <main id="view-profile" class="px-5 space-y-6 hidden view-section">
-            <div class="bg-kaspi-bg p-5 rounded-2xl flex items-center space-x-4">
-                <div class="w-12 h-12 bg-kaspi-red text-white rounded-full flex items-center justify-center font-bold text-xl">S</div>
-                <div>
-                    <h2 class="font-bold">Мой профиль</h2>
-                    <p class="text-xs text-gray-500">ID: <span id="prof-client-id" class="font-mono"></span></p>
-                </div>
-            </div>
-
-            <!-- Вход в скрытую админку -->
-            <div class="mt-8 border-t border-gray-100 pt-6">
-                <p class="text-xs text-gray-400 mb-2">Для администраторов</p>
-                <div class="flex space-x-2">
-                    <input type="password" id="admin-password" placeholder="Пароль" class="flex-1 bg-kaspi-bg p-3 rounded-xl text-sm outline-none">
-                    <button onclick="loginAdmin()" class="bg-gray-200 text-kaspi-text px-4 rounded-xl font-medium text-sm">Вход</button>
-                </div>
-            </div>
-
-            <!-- Скрытая панель (показывается после ввода пароля) -->
-            <div id="admin-panel" class="hidden bg-gray-900 p-5 rounded-2xl text-white mt-4 shadow-lg">
-                <h3 class="font-bold text-kaspi-red mb-4">Admin Panel</h3>
-                <div class="mb-4">
-                    <input type="text" id="admin-activate-id" placeholder="ID клиента" class="w-full bg-gray-800 p-3 rounded-xl text-sm outline-none mb-2 text-white">
-                    <button onclick="activateSubscription()" class="w-full bg-kaspi-red py-2 rounded-xl font-medium text-sm">Активировать подписку</button>
-                </div>
-                <button onclick="resetAllData()" class="w-full border border-red-500 text-red-500 py-2 rounded-xl font-medium text-sm mt-4">Сбросить ВСЕ данные</button>
-            </div>
-        </main>
-
-        <!-- Нижнее меню навигации -->
-        <nav class="fixed bottom-0 max-w-md w-full bg-white border-t border-gray-100 pb-safe pt-2 px-6 flex justify-between z-40 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
-            <button onclick="switchTab('dashboard')" class="nav-btn text-kaspi-red flex flex-col items-center p-2" data-target="dashboard">
-                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M13 3v11h9V3h-9zm-2 0H2v18h9V3zm11 13h-9v5h9v-5z"/></svg>
-                <span class="text-[10px] font-medium">Главная</span>
-            </button>
-            <button onclick="switchTab('inventory')" class="nav-btn text-gray-400 flex flex-col items-center p-2" data-target="inventory">
-                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zM3 18.5V7c1.1-.35 2.3-.5 3.5-.5 1.34 0 3.13.41 4.5.99v11.5C9.63 18.41 7.84 18 6.5 18c-1.2 0-2.4.15-3.5.5zm18 0c-1.1-.35-2.3-.5-3.5-.5-1.34 0-3.13.41-4.5.99V7.49c1.37-.59 3.16-.99 4.5-.99 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
-                <span class="text-[10px] font-medium">Склад</span>
-            </button>
-            <button onclick="switchTab('history')" class="nav-btn text-gray-400 flex flex-col items-center p-2" data-target="history">
-                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                <span class="text-[10px] font-medium">История</span>
-            </button>
-            <button onclick="switchTab('profile')" class="nav-btn text-gray-400 flex flex-col items-center p-2" data-target="profile">
-                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                <span class="text-[10px] font-medium">Профиль</span>
-            </button>
-        </nav>
+            <button class="btn btn-primary" onclick="addInventory()">Добавить на склад</button>
+        </div>
+        <div class="card">
+            <h2>Остатки на складе</h2>
+            <table id="inventory-table">
+                <thead><tr><th>Товар</th><th>Закуп</th><th>Кол-во</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Sales -->
+    <div id="tab-sales" class="hidden">
+        <div class="card">
+            <h2>Оформить продажу</h2>
+            <div class="form-group">
+                <label>Выберите товар</label>
+                <select id="sale-product-select"></select>
+            </div>
+            <div class="form-group">
+                <label>Цена продажи (₸)</label>
+                <input type="number" id="sale-price">
+            </div>
+            <div class="form-group">
+                <label>Логистика (₸)</label>
+                <input type="number" id="sale-logistics" value="0">
+            </div>
+            <div class="form-group">
+                <label>Комиссия Kaspi</label>
+                <select id="sale-commission">
+                    <option value="0.05">5%</option>
+                    <option value="0.10">10%</option>
+                    <option value="0.15">15%</option>
+                    <option value="0.20" selected>20%</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="processSale()">Зафиксировать продажу</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="card">
+        <h2>Панель администратора</h2>
+        <div id="admin-list"></div>
+        <button class="btn" style="margin-top: 15px;" onclick="closeAdmin()">Выход</button>
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, increment, onSnapshot } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCXQNCinb9HxI0QqL2SYwDbTYnHcyLiH-8",
+        authDomain: "seller-bi.firebaseapp.com",
+        projectId: "seller-bi",
+        storageBucket: "seller-bi.firebasestorage.app",
+        messagingSenderId: "1014568930489",
+        appId: "1:1014568930489:web:587eb9941dc7d3f3bb1f68"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let clientID = localStorage.getItem('sbi_client_id');
+    let userData = null;
+    let myChart = null;
+
+    // --- Core Logic ---
+
+    async function initApp() {
+        if (!clientID) {
+            clientID = 'SBI-' + Math.floor(1000 + Math.random() * 9000);
+            localStorage.setItem('sbi_client_id', clientID);
+        }
+        document.getElementById('display-id').innerText = clientID;
+
+        const userRef = doc(db, 'users', clientID);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+            const trialEnd = new Date();
+            trialEnd.setDate(trialEnd.getDate() + 3);
+            userData = {
+                id: clientID,
+                trialEnd: trialEnd.getTime(),
+                isPaid: false,
+                createdAt: new Date().getTime()
+            };
+            await setDoc(userRef, userData);
+        } else {
+            userData = userSnap.data();
+        }
+
+        checkAccess();
+        loadInventory();
+        loadStats();
+    }
+
+    function checkAccess() {
+        const now = new Date().getTime();
+        if (now > userData.trialEnd && !userData.isPaid) {
+            document.getElementById('paywall').style.display = 'block';
+            document.getElementById('main-content').classList.add('hidden');
+        }
+    }
+
+    // --- Склад ---
+    window.addInventory = async () => {
+        const name = document.getElementById('inv-name').value.trim();
+        const cost = parseFloat(document.getElementById('inv-cost').value);
+        const qty = parseInt(document.getElementById('inv-qty').value);
+
+        if (!name || isNaN(cost) || isNaN(qty)) return alert('Заполните все поля');
+
+        const invRef = collection(db, 'products');
+        const q = query(invRef, where("uid", "==", clientID), where("name", "==", name));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const docRef = doc(db, 'products', querySnapshot.docs[0].id);
+            await updateDoc(docRef, { 
+                quantity: increment(qty),
+                cost: cost // Обновляем цену закупа на актуальную
+            });
+        } else {
+            await addDoc(invRef, {
+                uid: clientID,
+                name: name,
+                cost: cost,
+                quantity: qty
+            });
+        }
+        
+        alert('Товар добавлен');
+        loadInventory();
+    };
+
+    async function loadInventory() {
+        const q = query(collection(db, 'products'), where("uid", "==", clientID));
+        const snap = await getDocs(q);
+        const tbody = document.querySelector('#inventory-table tbody');
+        const select = document.getElementById('sale-product-select');
+        
+        tbody.innerHTML = '';
+        select.innerHTML = '<option value="">Выбрать товар...</option>';
+        
+        snap.forEach(doc => {
+            const data = doc.data();
+            tbody.innerHTML += `<tr><td>${data.name}</td><td>${formatNum(data.cost)} ₸</td><td>${data.quantity} шт</td></tr>`;
+            if (data.quantity > 0) {
+                select.innerHTML += `<option value="${doc.id}" data-cost="${data.cost}" data-name="${data.name}">${data.name}</option>`;
+            }
+        });
+    }
+
+    // --- Продажи ---
+    window.processSale = async () => {
+        const select = document.getElementById('sale-product-select');
+        const productId = select.value;
+        const sellPrice = parseFloat(document.getElementById('sale-price').value);
+        const logistics = parseFloat(document.getElementById('sale-logistics').value) || 0;
+        const commRate = parseFloat(document.getElementById('sale-commission').value);
+
+        if (!productId || isNaN(sellPrice)) return alert('Укажите цену продажи');
+
+        const option = select.options[select.selectedIndex];
+        const costPrice = parseFloat(option.dataset.cost);
+        const productName = option.dataset.name;
+
+        // Расчет: Прибыль = Цена - Закуп - Комиссия - Налог (3%) - Логистика
+        const commission = sellPrice * commRate;
+        const tax = sellPrice * 0.03;
+        const profit = sellPrice - costPrice - commission - tax - logistics;
+
+        await addDoc(collection(db, 'sales'), {
+            uid: clientID,
+            productName,
+            sellPrice,
+            costPrice,
+            profit,
+            date: new Date().getTime()
+        });
+
+        const prodRef = doc(db, 'products', productId);
+        await updateDoc(prodRef, { quantity: increment(-1) });
+
+        alert(`Продано! Чистая прибыль: ${formatNum(Math.round(profit))} ₸`);
+        loadInventory();
+        loadStats();
+    };
+
+    // --- Дашборд ---
+    async function loadStats() {
+        const q = query(collection(db, 'sales'), where("uid", "==", clientID));
+        const snap = await getDocs(q);
+        
+        let totalRevenue = 0;
+        let totalProfit = 0;
+        let totalExpenses = 0;
+        let chartData = {};
+
+        snap.forEach(doc => {
+            const d = doc.data();
+            totalRevenue += d.sellPrice;
+            totalProfit += d.profit;
+            totalExpenses += (d.sellPrice - d.profit);
+
+            const dateLabel = new Date(d.date).toLocaleDateString();
+            chartData[dateLabel] = (chartData[dateLabel] || 0) + d.profit;
+        });
+
+        document.getElementById('stat-revenue').innerText = formatNum(Math.round(totalRevenue)) + ' ₸';
+        document.getElementById('stat-profit').innerText = formatNum(Math.round(totalProfit)) + ' ₸';
+        document.getElementById('stat-expenses').innerText = formatNum(Math.round(totalExpenses)) + ' ₸';
+
+        updateChart(chartData);
+    }
+
+    function updateChart(data) {
+        const ctx = document.getElementById('profitChart').getContext('2d');
+        if (myChart) myChart.destroy();
+        
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Object.keys(data),
+                datasets: [{
+                    label: 'Прибыль',
+                    data: Object.values(data),
+                    borderColor: '#F14635',
+                    backgroundColor: 'rgba(241, 70, 53, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+    }
+
+    // --- Admin Functions ---
+    window.openAdmin = async () => {
+        const pass = prompt('Введите пароль администратора:');
+        if (pass !== '0809042011zharkyn@') return alert('Доступ запрещен');
+        
+        document.getElementById('admin-panel').style.display = 'block';
+        const list = document.getElementById('admin-list');
+        list.innerHTML = 'Загрузка списка...';
+        
+        const snap = await getDocs(collection(db, 'users'));
+        list.innerHTML = '';
+        snap.forEach(uDoc => {
+            const u = uDoc.data();
+            const date = new Date(u.trialEnd).toLocaleDateString();
+            list.innerHTML += `
+                <div class="admin-item">
+                    <div><b>${u.id}</b><br><small>До: ${date} (${u.isPaid ? 'Оплачено' : 'Триал'})</small></div>
+                    <div class="admin-btns">
+                        <button class="btn-sm" onclick="extendUser('${u.id}', 30)">+1 мес</button>
+                        <button class="btn-sm" onclick="extendUser('${u.id}', 180)">+6 мес</button>
+                        <button class="btn-sm" onclick="extendUser('${u.id}', 365)">+1 год</button>
+                    </div>
+                </div>
+            `;
+        });
+    };
+
+    window.extendUser = async (id, days) => {
+        const userRef = doc(db, 'users', id);
+        const snap = await getDoc(userRef);
+        let currentEnd = snap.data().trialEnd;
+        const now = new Date().getTime();
+        
+        // Если подписка уже кончилась, продлеваем от текущего момента
+        let baseDate = currentEnd < now ? now : currentEnd;
+        let newEnd = baseDate + (days * 24 * 60 * 60 * 1000);
+        
+        await updateDoc(userRef, {
+            trialEnd: newEnd,
+            isPaid: true
+        });
+        alert('Обновлено');
+        openAdmin();
+    };
+
+    window.closeAdmin = () => { document.getElementById('admin-panel').style.display = 'none'; };
+
+    // --- Utils ---
+    function formatNum(x) { return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+
+    window.switchTab = (tab) => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('tab-dashboard').classList.add('hidden');
+        document.getElementById('tab-inventory').classList.add('hidden');
+        document.getElementById('tab-sales').classList.add('hidden');
+        document.getElementById(`tab-${tab}`).classList.remove('hidden');
+    };
+
+    initApp();
+</script>
 </body>
 </html>

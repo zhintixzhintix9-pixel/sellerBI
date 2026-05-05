@@ -9,91 +9,87 @@
     <style>
         :root {
             --kaspi-red: #F14635;
-            --kaspi-blue: #0089D0;
             --bg-gray: #F2F2F2;
             --text-main: #333;
             --border-color: #EAEAEA;
-            --waiting-bg: #fff4e5; /* Цвет для ожидающих подтверждения */
+            --waiting-bg: #FFF9C4;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
-        body { background-color: var(--bg-gray); color: var(--text-main); line-height: 1.5; }
+        body { background-color: var(--bg-gray); color: var(--text-main); -webkit-tap-highlight-color: transparent; }
 
         header { background: #fff; padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .logo { color: var(--kaspi-red); font-weight: 700; font-size: 20px; text-decoration: none; }
-        .client-id { font-size: 14px; color: #777; background: #f9f9f9; padding: 4px 10px; border-radius: 5px; }
+        .client-id { font-size: 13px; color: #777; background: #f5f5f5; padding: 5px 12px; border-radius: 6px; }
 
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-        .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        h2 { font-size: 18px; margin-bottom: 15px; font-weight: 500; }
+        .container { max-width: 800px; margin: 0 auto; padding: 15px; }
+        .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+        h2 { font-size: 17px; margin-bottom: 15px; font-weight: 500; }
+
+        .tariff-card { background: #fff; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); text-align: center; margin-bottom: 10px; }
+        .tariff-price { color: var(--kaspi-red); font-weight: 700; font-size: 18px; }
 
         .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; outline: none; }
-        input:focus { border-color: var(--kaspi-red); }
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s; text-align: center; display: block; text-decoration: none;}
+        label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; outline: none; background: #fff; }
+
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s; text-align: center; }
         .btn-primary { background: var(--kaspi-red); color: #fff; }
-        .btn-outline { background: transparent; border: 1px solid var(--kaspi-red); color: var(--kaspi-red); margin-top: 10px; }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .widget { background: #fff; padding: 15px; border-radius: 12px; text-align: center; }
-        .widget-val { font-size: 22px; font-weight: 700; color: var(--text-main); margin-top: 5px; }
-        .widget-label { font-size: 12px; color: #888; text-transform: uppercase; }
-
-        #paywall { display: none; position: fixed; inset: 0; background: #fff; z-index: 1000; padding: 40px 20px; text-align: center; overflow-y: auto; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; font-size: 12px; color: #999; padding: 10px; border-bottom: 1px solid var(--border-color); }
+        .tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding: 5px 0; }
+        .tab { padding: 8px 16px; background: #fff; border-radius: 20px; font-size: 14px; white-space: nowrap; cursor: pointer; border: 1px solid var(--border-color); }
+        .tab.active { background: var(--kaspi-red); color: #fff; border-color: var(--kaspi-red); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .widget { background: #fff; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #f0f0f0; }
+        .widget-val { font-size: 19px; font-weight: 700; margin-top: 4px; }
+        .widget-label { font-size: 11px; color: #999; text-transform: uppercase; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; font-size: 11px; color: #999; padding: 10px; border-bottom: 1px solid var(--border-color); }
         td { padding: 12px 10px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
 
-        .admin-item { border-bottom: 1px solid #eee; padding: 10px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; }
-        .admin-item.waiting-active { background-color: var(--waiting-bg); border: 1px solid #ffcc80; margin-bottom: 5px; }
-        .btn-sm { padding: 6px 10px; font-size: 11px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; background: #fff; }
-
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-        .tab { padding: 8px 16px; background: #fff; border-radius: 20px; font-size: 14px; white-space: nowrap; cursor: pointer; border: 1px solid transparent; }
-        .tab.active { background: var(--kaspi-red); color: #fff; }
+        #paywall { display: none; position: fixed; inset: 0; background: #fff; z-index: 1000; padding: 40px 20px; text-align: center; }
+        .admin-item { border: 1px solid #eee; padding: 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; text-align: left;}
+        .admin-item.waiting { background: var(--waiting-bg); border-color: #fdd835; }
+        .btn-sm { padding: 8px 12px; font-size: 11px; border-radius: 6px; border: 1px solid #ddd; background: #fff; cursor: pointer; }
 
         .hidden { display: none !important; }
-        .profit-pos { color: #2ecc71; font-weight: 500; }
-        .profit-neg { color: #e74c3c; font-weight: 500; }
+        .profit-pos { color: #2ecc71; font-weight: 700; }
+        .profit-neg { color: #e74c3c; font-weight: 700; }
     </style>
 </head>
 <body>
 
 <header>
     <a href="#" class="logo">Seller BI</a>
-    <div id="display-id" class="client-id">Загрузка...</div>
+    <div id="display-id" class="client-id">...</div>
 </header>
 
 <div id="paywall">
-    <h2 style="font-size: 24px;">Доступ ограничен</h2>
-    <p style="color: #666; margin-bottom: 30px;">Выберите тариф и оплатите по номеру Kaspi:</p>
-    <div style="background: #fdf2f2; padding: 15px; border-radius: 10px; margin-bottom: 30px;">
+    <h2 style="font-size: 22px; margin-bottom: 10px;">Доступ ограничен</h2>
+    <p style="color: #666; margin-bottom: 25px; font-size: 14px;">Для работы оплатите подписку:</p>
+    <div style="background: #fdf2f2; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
         <div style="font-weight: 700; font-size: 18px;">+7 747 421 4264</div>
-        <div style="font-size: 14px;">Анеля Ж.</div>
+        <div style="font-size: 13px; color: #555;">Анеля Ж. (Kaspi Gold)</div>
     </div>
-    <div class="grid" style="grid-template-columns: 1fr; max-width: 400px; margin: 0 auto;">
-        <div class="card" style="border: 1px solid #eee;"><b>1 месяц</b> <br> <span style="color:var(--kaspi-red)">3 200 ₸</span></div>
-        <div class="card" style="border: 2px solid var(--kaspi-red);"><b>6 месяцев</b> <br> <span style="color:var(--kaspi-red)">16 000 ₸</span></div>
-        <div class="card" style="border: 1px solid #eee;"><b>1 год</b> <br> <span style="color:var(--kaspi-red)">28 000 ₸</span></div>
-    </div>
-    <button class="btn btn-primary" onclick="requestActivation()" id="btn-pay-confirm">Я оплатил(а)</button>
-    <p id="wait-msg" class="hidden" style="margin-top:15px; color: var(--kaspi-blue);">Запрос отправлен. Ожидайте активации администратором.</p>
+    <div class="tariff-card">1 месяц — <span class="tariff-price">3 200 ₸</span></div>
+    <div class="tariff-card">6 месяцев — <span class="tariff-price">16 000 ₸</span></div>
+    <div class="tariff-card">1 год — <span class="tariff-price">28 000 ₸</span></div>
+    <button class="btn btn-primary" style="margin-top: 20px;" onclick="requestActivation()" id="pay-btn">Я оплатил(а)</button>
 </div>
 
 <div class="container" id="main-content">
     <div class="tabs">
-        <div class="tab active" data-tab="dashboard">Аналитика</div>
-        <div class="tab" data-tab="inventory">Склад</div>
-        <div class="tab" data-tab="sales">Продажа</div>
-        <div class="tab" data-tab="history">История</div>
-        <div class="tab" data-tab="tariffs">Тарифы</div>
-        <div class="tab" onclick="openAdmin()">Админ</div>
+        <div class="tab active" data-id="dashboard">Дашборд</div>
+        <div class="tab" data-id="inventory">Склад</div>
+        <div class="tab" data-id="sales">Продажа</div>
+        <div class="tab" data-id="history">История</div>
+        <div class="tab" data-id="tariffs">Тарифы</div>
+        <div class="tab" data-id="admin" id="admin-tab-btn">Админ</div>
     </div>
 
-    <!-- Analytics -->
-    <div id="tab-dashboard" class="tab-content">
+    <div id="sec-dashboard" class="sec">
         <div class="grid">
             <div class="widget">
                 <div class="widget-label">Чистая прибыль</div>
@@ -105,56 +101,51 @@
             </div>
         </div>
         <div class="card">
-            <h2>График прибыли</h2>
-            <canvas id="profitChart" style="max-height: 300px;"></canvas>
+            <h2>Динамика прибыли</h2>
+            <canvas id="profitChart" style="max-height: 250px;"></canvas>
         </div>
     </div>
 
-    <!-- Inventory -->
-    <div id="tab-inventory" class="tab-content hidden">
+    <div id="sec-inventory" class="sec hidden">
         <div class="card">
             <h2>Добавить товар</h2>
-            <div class="form-group"><label>Название</label><input type="text" id="inv-name"></div>
+            <div class="form-group"><label>Название</label><input type="text" id="inv-name" placeholder="Напр: iPhone 15"></div>
             <div class="grid">
                 <div class="form-group"><label>Закуп (₸)</label><input type="number" id="inv-cost"></div>
                 <div class="form-group"><label>Кол-во</label><input type="number" id="inv-qty"></div>
             </div>
-            <button class="btn btn-primary" onclick="addInventory()">Сохранить на склад</button>
+            <button class="btn btn-primary" onclick="addInventory()">Добавить на склад</button>
         </div>
-        <div class="card">
+        <div class="card" style="padding: 10px;">
             <table id="inventory-table">
-                <thead><tr><th>Товар</th><th>Закуп</th><th>Кол-во</th></tr></thead>
+                <thead><tr><th>Товар</th><th>Закуп</th><th>Остаток</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
     </div>
 
-    <!-- Sales -->
-    <div id="tab-sales" class="tab-content hidden">
+    <div id="sec-sales" class="sec hidden">
         <div class="card">
             <h2>Оформить продажу</h2>
-            <div class="form-group"><label>Товар</label><select id="sale-product-select"></select></div>
+            <div class="form-group"><label>Выберите товар</label><select id="sale-product-select"></select></div>
             <div class="form-group"><label>Цена продажи (₸)</label><input type="number" id="sale-price"></div>
-            <div class="grid">
-                <div class="form-group"><label>Логистика (₸)</label><input type="number" id="sale-logistics" value="0"></div>
-                <div class="form-group">
-                    <label>Комиссия Kaspi</label>
-                    <select id="sale-commission">
-                        <option value="0.05">5%</option>
-                        <option value="0.10">10%</option>
-                        <option value="0.15">15%</option>
-                        <option value="0.20" selected>20%</option>
-                    </select>
-                </div>
+            <div class="form-group"><label>Логистика / Расходы (₸)</label><input type="number" id="sale-logistics" value="0"></div>
+            <div class="form-group">
+                <label>Комиссия Kaspi</label>
+                <select id="sale-commission">
+                    <option value="0.05">5%</option>
+                    <option value="0.10">10%</option>
+                    <option value="0.15">15%</option>
+                    <option value="0.20" selected>20%</option>
+                </select>
             </div>
-            <button class="btn btn-primary" onclick="processSale()">Завершить продажу</button>
+            <button class="btn btn-primary" onclick="processSale()">Продать товар</button>
         </div>
     </div>
 
-    <!-- History -->
-    <div id="tab-history" class="tab-content hidden">
-        <div class="card">
-            <h2>История последних продаж</h2>
+    <div id="sec-history" class="sec hidden">
+        <div class="card" style="padding: 10px;">
+            <h2>История продаж</h2>
             <table id="history-table">
                 <thead><tr><th>Дата</th><th>Товар</th><th>Прибыль</th></tr></thead>
                 <tbody></tbody>
@@ -162,35 +153,30 @@
         </div>
     </div>
 
-    <!-- Tariffs -->
-    <div id="tab-tariffs" class="tab-content hidden">
+    <div id="sec-tariffs" class="sec hidden">
         <div class="card" style="text-align: center;">
-            <h2>Тарифные планы</h2>
-            <div class="grid">
-                <div class="widget" style="border: 1px solid #eee;">1 мес<br><b>3 200 ₸</b></div>
-                <div class="widget" style="border: 1px solid var(--kaspi-red);">6 мес<br><b>16 000 ₸</b></div>
-                <div class="widget" style="border: 1px solid #eee;">1 год<br><b>28 000 ₸</b></div>
+            <h2>Тарифы Seller BI</h2>
+            <div style="margin-top: 15px;">
+                <div class="tariff-card">1 месяц — <span class="tariff-price">3 200 ₸</span></div>
+                <div class="tariff-card">6 месяцев — <span class="tariff-price">16 000 ₸</span></div>
+                <div class="tariff-card">1 год — <span class="tariff-price">28 000 ₸</span></div>
             </div>
-            <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px;">
-                <p>Оплата на Kaspi Gold:</p>
-                <h3 style="color: var(--kaspi-red)">+7 747 421 4264</h3>
-                <p>Анеля Ж.</p>
-            </div>
+            <p style="margin: 20px 0; font-size: 14px;">Оплата Kaspi: <b>+7 747 421 4264</b></p>
             <button class="btn btn-primary" onclick="requestActivation()">Я оплатил(а)</button>
         </div>
     </div>
 
-    <!-- Admin -->
-    <div id="admin-panel" class="card hidden">
-        <h2>Управление пользователями</h2>
-        <div id="admin-list"></div>
-        <button class="btn btn-outline" onclick="closeAdmin()">Закрыть панель</button>
+    <div id="sec-admin" class="sec hidden">
+        <div class="card">
+            <h2>Панель управления</h2>
+            <div id="admin-list">Загрузка...</div>
+        </div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, increment, orderBy, limit, onSnapshot } 
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, increment, onSnapshot } 
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -206,112 +192,126 @@
     const db = getFirestore(app);
 
     let clientID = localStorage.getItem('sbi_client_id');
-    let userData = null;
     let myChart = null;
 
-    // Форматирование чисел
-    const fNum = (v) => Number(v).toLocaleString('ru-RU') + " ₸";
+    const fNum = (n) => Math.round(n).toLocaleString('ru-RU') + " ₸";
 
-    async function initApp() {
+    async function init() {
         if (!clientID) {
             clientID = 'SBI-' + Math.floor(1000 + Math.random() * 9000);
             localStorage.setItem('sbi_client_id', clientID);
         }
         document.getElementById('display-id').innerText = clientID;
 
-        const userRef = doc(db, 'users', clientID);
-        
-        // Real-time слушатель для данных пользователя
-        onSnapshot(userRef, (snap) => {
+        // 1. Статус пользователя
+        onSnapshot(doc(db, 'users', clientID), (snap) => {
             if (snap.exists()) {
-                userData = snap.data();
-                checkAccess();
+                const u = snap.data();
+                const isExpired = new Date().getTime() > u.trialEnd && !u.isPaid;
+                document.getElementById('paywall').style.display = isExpired ? 'block' : 'none';
+                document.getElementById('main-content').classList.toggle('hidden', isExpired);
+                if(u.waiting) {
+                    document.getElementById('pay-btn').innerText = "Проверка оплаты...";
+                    document.getElementById('pay-btn').disabled = true;
+                }
             } else {
-                const trialEnd = new Date().getTime() + (3 * 24 * 60 * 60 * 1000);
-                setDoc(userRef, { id: clientID, trialEnd, isPaid: false, waiting: false });
+                setDoc(doc(db, 'users', clientID), {
+                    id: clientID, trialEnd: new Date().getTime() + (3*24*60*60*1000), isPaid: false, waiting: false
+                });
             }
         });
 
-        loadInventory();
-        loadStats();
-        renderHistory();
+        // 2. Склад
+        onSnapshot(query(collection(db, 'products'), where("uid", "==", clientID)), (snap) => {
+            const tbody = document.querySelector('#inventory-table tbody');
+            const select = document.getElementById('sale-product-select');
+            tbody.innerHTML = '';
+            select.innerHTML = '<option value="">Выбрать товар...</option>';
+            snap.forEach(d => {
+                const p = d.data();
+                tbody.innerHTML += `<tr><td>${p.name}</td><td>${fNum(p.cost)}</td><td>${p.quantity} шт</td></tr>`;
+                if(p.quantity > 0) select.innerHTML += `<option value="${d.id}" data-cost="${p.cost}">${p.name}</option>`;
+            });
+        });
+
+        // 3. Продажи (Дашборд + История) - БЕЗ orderBy во избежание проблем с индексами
+        onSnapshot(query(collection(db, 'sales'), where("uid", "==", clientID)), (snap) => {
+            let totalProf = 0, totalRev = 0, rawSales = [];
+            
+            snap.forEach(d => {
+                const s = d.data();
+                totalProf += Number(s.profit || 0);
+                totalRev += Number(s.sellPrice || 0);
+                rawSales.push(s);
+            });
+
+            // Сортируем локально (новые сверху)
+            rawSales.sort((a, b) => b.date - a.date);
+
+            // Виджеты
+            document.getElementById('stat-profit').innerText = fNum(totalProf);
+            document.getElementById('stat-revenue').innerText = fNum(totalRev);
+
+            // История
+            let histHTML = '';
+            rawSales.slice(0, 15).forEach(s => {
+                const dt = new Date(s.date).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit'});
+                const cl = s.profit >= 0 ? 'profit-pos' : 'profit-neg';
+                histHTML += `<tr><td>${dt}</td><td>${s.productName}</td><td class="${cl}">${fNum(s.profit)}</td></tr>`;
+            });
+            document.querySelector('#history-table tbody').innerHTML = histHTML;
+
+            // График (берем последние 7 дней для наглядности)
+            const chartMap = {};
+            rawSales.forEach(s => {
+                const day = new Date(s.date).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit'});
+                chartMap[day] = (chartMap[day] || 0) + s.profit;
+            });
+            renderChart(chartMap);
+        });
     }
 
-    function checkAccess() {
-        const now = new Date().getTime();
-        const isExpired = now > userData.trialEnd && !userData.isPaid;
-        
-        if (isExpired) {
-            document.getElementById('paywall').style.display = 'block';
-            document.getElementById('main-content').classList.add('hidden');
-        } else {
-            document.getElementById('paywall').style.display = 'none';
-            document.getElementById('main-content').classList.remove('hidden');
-        }
+    // Навигация
+    document.querySelectorAll('.tab').forEach(btn => {
+        btn.onclick = () => {
+            const id = btn.getAttribute('data-id');
+            if (id === 'admin') {
+                const p = prompt("Пароль:");
+                if(p !== '0809042011zharkyn@') return;
+                loadAdmin();
+            }
+            document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('sec-' + id).classList.remove('hidden');
+            btn.classList.add('active');
+        };
+    });
 
-        if (userData.waiting) {
-            document.getElementById('btn-pay-confirm').innerText = "Ожидайте подтверждения...";
-            document.getElementById('btn-pay-confirm').disabled = true;
-            document.getElementById('wait-msg').classList.remove('hidden');
-        }
-    }
-
-    // Запрос активации
-    window.requestActivation = async () => {
-        await updateDoc(doc(db, 'users', clientID), { waiting: true });
-        alert("Запрос отправлен! Администратор проверит оплату в ближайшее время.");
-    };
-
-    // Склад
     window.addInventory = async () => {
         const name = document.getElementById('inv-name').value.trim();
         const cost = parseFloat(document.getElementById('inv-cost').value);
         const qty = parseInt(document.getElementById('inv-qty').value);
-
-        if (!name || isNaN(cost)) return alert("Заполните данные");
+        if(!name || isNaN(cost) || isNaN(qty)) return alert("Заполните поля");
 
         const q = query(collection(db, 'products'), where("uid", "==", clientID), where("name", "==", name));
         const res = await getDocs(q);
-
-        if (!res.empty) {
-            await updateDoc(doc(db, 'products', res.docs[0].id), { quantity: increment(qty), cost: cost });
+        if(!res.empty) {
+            await updateDoc(doc(db, 'products', res.docs[0].id), { quantity: increment(qty), cost });
         } else {
             await addDoc(collection(db, 'products'), { uid: clientID, name, cost, quantity: qty });
         }
-        alert("Обновлено");
-        loadInventory();
+        alert("Готово");
     };
 
-    async function loadInventory() {
-        const q = query(collection(db, 'products'), where("uid", "==", clientID));
-        const snap = await getDocs(q);
-        const tbody = document.querySelector('#inventory-table tbody');
-        const select = document.getElementById('sale-product-select');
-        
-        tbody.innerHTML = '';
-        select.innerHTML = '';
-        
-        snap.forEach(d => {
-            const data = d.data();
-            tbody.innerHTML += `<tr><td>${data.name}</td><td>${fNum(data.cost)}</td><td>${data.quantity}</td></tr>`;
-            if(data.quantity > 0) {
-                let opt = document.createElement('option');
-                opt.value = d.id; opt.text = data.name; opt.dataset.cost = data.cost;
-                select.add(opt);
-            }
-        });
-    }
-
-    // Продажи
     window.processSale = async () => {
         const sel = document.getElementById('sale-product-select');
         const price = parseFloat(document.getElementById('sale-price').value);
         const logs = parseFloat(document.getElementById('sale-logistics').value) || 0;
         const comm = parseFloat(document.getElementById('sale-commission').value);
-
-        if (!sel.value || isNaN(price)) return alert("Ошибка ввода");
+        if(!sel.value || isNaN(price)) return alert("Укажите цену");
 
         const cost = parseFloat(sel.options[sel.selectedIndex].dataset.cost);
+        // Прибыль = Цена - Закуп - Комиссия - Налог (3%) - Логистика
         const profit = price - cost - (price * comm) - (price * 0.03) - logs;
 
         await addDoc(collection(db, 'sales'), {
@@ -321,124 +321,56 @@
             sellPrice: price,
             date: new Date().getTime()
         });
-
         await updateDoc(doc(db, 'products', sel.value), { quantity: increment(-1) });
         alert("Продажа сохранена!");
-        loadStats();
-        renderHistory();
-        loadInventory();
     };
 
-    // История
-    async function renderHistory() {
-        const q = query(collection(db, 'sales'), where("uid", "==", clientID), orderBy("date", "desc"), limit(10));
-        const snap = await getDocs(q);
-        const tbody = document.querySelector('#history-table tbody');
-        tbody.innerHTML = '';
-        
-        snap.forEach(d => {
-            const s = d.data();
-            const date = new Date(s.date).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit'});
-            const pClass = s.profit >= 0 ? 'profit-pos' : 'profit-neg';
-            tbody.innerHTML += `<tr><td>${date}</td><td>${s.productName}</td><td class="${pClass}">${fNum(s.profit.toFixed(0))}</td></tr>`;
-        });
-    }
-
-    // Аналитика и График
-    async function loadStats() {
-        const q = query(collection(db, 'sales'), where("uid", "==", clientID), orderBy("date", "asc"));
-        const snap = await getDocs(q);
-        
-        let rev = 0, prof = 0, chartMap = {};
-        
-        snap.forEach(d => {
-            const s = d.data();
-            rev += s.sellPrice;
-            prof += s.profit;
-            
-            const day = new Date(s.date).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit'});
-            chartMap[day] = (chartMap[day] || 0) + s.profit;
-        });
-
-        document.getElementById('stat-revenue').innerText = fNum(rev.toFixed(0));
-        document.getElementById('stat-profit').innerText = fNum(prof.toFixed(0));
-
+    function renderChart(dataMap) {
         const ctx = document.getElementById('profitChart').getContext('2d');
-        if (myChart) myChart.destroy();
-        
+        const labels = Object.keys(dataMap).reverse();
+        const values = Object.values(dataMap).reverse();
+        if(myChart) myChart.destroy();
         myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: Object.keys(chartMap),
-                datasets: [{
-                    data: Object.values(chartMap),
-                    borderColor: '#F14635',
-                    backgroundColor: 'rgba(241, 70, 53, 0.1)',
-                    fill: true,
-                    tension: 0.3
-                }]
+                labels,
+                datasets: [{ label: 'Прибыль', data: values, borderColor: '#F14635', backgroundColor: 'rgba(241,70,53,0.1)', fill: true, tension: 0.3 }]
             },
-            options: { 
-                plugins: { legend: { display: false } },
-                scales: { y: { ticks: { callback: (v) => v.toLocaleString() } } }
-            }
+            options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v) => v.toLocaleString() } } } }
         });
     }
 
-    // Админка
-    window.openAdmin = async () => {
-        if (prompt("Пароль:") !== '0809042011zharkyn@') return;
-        document.getElementById('admin-panel').classList.remove('hidden');
-        const list = document.getElementById('admin-list');
-        list.innerHTML = 'Загрузка...';
-        
-        const snap = await getDocs(collection(db, 'users'));
-        list.innerHTML = '';
-        snap.forEach(uDoc => {
-            const u = uDoc.data();
-            const dateStr = new Date(u.trialEnd).toLocaleDateString();
-            const waitClass = u.waiting ? 'waiting-active' : '';
-            
-            list.innerHTML += `
-                <div class="admin-item ${waitClass}">
-                    <div style="font-size:12px;"><b>${u.id}</b><br>До: ${dateStr}</div>
-                    <div style="display:flex; gap:3px;">
-                        <button class="btn-sm" onclick="extendUser('${u.id}', 30)">+1м</button>
-                        <button class="btn-sm" onclick="extendUser('${u.id}', 180)">+6м</button>
-                        <button class="btn-sm" onclick="extendUser('${u.id}', 365)">+1г</button>
-                    </div>
-                </div>`;
+    async function loadAdmin() {
+        onSnapshot(collection(db, 'users'), (snap) => {
+            const container = document.getElementById('admin-list');
+            container.innerHTML = '';
+            snap.forEach(d => {
+                const u = d.data();
+                const date = new Date(u.trialEnd).toLocaleDateString();
+                container.innerHTML += `
+                    <div class="admin-item ${u.waiting ? 'waiting' : ''}">
+                        <div><b>${u.id}</b><br><small>До: ${date}</small></div>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn-sm" onclick="extend('${u.id}', 30)">+1м</button>
+                            <button class="btn-sm" onclick="extend('${u.id}', 180)">+6м</button>
+                            <button class="btn-sm" onclick="extend('${u.id}', 365)">+1г</button>
+                        </div>
+                    </div>`;
+            });
         });
-    };
+    }
 
-    window.extendUser = async (id, days) => {
+    window.extend = async (id, days) => {
         const ref = doc(db, 'users', id);
-        const snap = await getDoc(ref);
-        const current = snap.data().trialEnd;
-        const now = new Date().getTime();
-        
-        let startFrom = current < now ? now : current;
-        let newEnd = startFrom + (days * 24 * 60 * 60 * 1000);
-        
-        await updateDoc(ref, { trialEnd: newEnd, isPaid: true, waiting: false });
-        alert("Подписка продлена");
-        openAdmin();
+        const s = await getDoc(ref);
+        const start = Math.max(new Date().getTime(), s.data().trialEnd);
+        await updateDoc(ref, { trialEnd: start + (days*24*60*60*1000), isPaid: true, waiting: false });
+        alert("Оплачено");
     };
 
-    window.closeAdmin = () => document.getElementById('admin-panel').classList.add('hidden');
+    window.requestActivation = () => updateDoc(doc(db, 'users', clientID), { waiting: true }).then(() => alert("Запрос отправлен"));
 
-    // Навигация
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.onclick = (e) => {
-            if (!e.target.dataset.tab) return;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            e.target.classList.add('active');
-            document.getElementById('tab-' + e.target.dataset.tab).classList.remove('hidden');
-        };
-    });
-
-    initApp();
+    init();
 </script>
 </body>
 </html>
